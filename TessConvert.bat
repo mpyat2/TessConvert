@@ -1,2 +1,2 @@
-java -jar %~dp0dist\TessConvert.jar %*
+java -jar "%~dp0dist\TessConvert.jar" %*
 
