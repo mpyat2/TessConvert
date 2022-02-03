@@ -4,13 +4,15 @@
 package pmak.tools.tess_convert;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.UIManager;
 
 import nom.tam.fits.FitsException;
 
@@ -21,6 +23,7 @@ import nom.tam.fits.FitsException;
 public class TessConvert {
 
 	private static boolean loadRaw = false;
+	private static boolean overwrite = false;
 	private static String inputName = null;
 	private static String outputName = null;
 	
@@ -28,25 +31,41 @@ public class TessConvert {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		processCmdLineArgs(args);
-		try {
-			processFile();
-		} catch (Exception ex) {
-			System.err.println(ex);
+		if (args.length > 0) {
+			processCmdLineArgs(args);
+			try {
+				processFile();
+			} catch (Exception ex) {
+				System.err.println(ex.getMessage());
+				System.exit(1);
+			}
+		} else {
+			// Schedule a job for the event-dispatching thread:
+			// creating and showing this application's GUI.
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					createAndShowGUI();				
+				}
+			});
 		}
 	}
 	
-	private static void processFile() throws FileNotFoundException, IOException, FitsException, ObservationReadError {
+	public static void processFile() throws IOException, FitsException, ObservationReadError, GeneralError {
 		TessFITSreader tess_reader = new TessFITSreader();
 		try(FileInputStream stream = new FileInputStream(inputName);
 			BufferedInputStream bufferedStream = new BufferedInputStream(stream);
 		) 
 		{
+			if (!overwrite && outputName != null && (new File(outputName).exists())) {
+				throw new GeneralError("Output file already exists. Use --force-overwrite switch to overwrite.");
+			}
+			
+			tess_reader.initialize(bufferedStream);			
 			List<String> list = null;
 			if (outputName != null) {
 				list = new ArrayList<String>();
 			}
-			tess_reader.readObservations(bufferedStream, loadRaw);
+			tess_reader.readObservations(loadRaw);
 			for (int i = 0; i < tess_reader.getObservationCount(); i++) {
 				Observation obs = tess_reader.getObservation(i);
 				String s = obs.time + "\t" + obs.value + "\t" + obs.error;
@@ -62,9 +81,24 @@ public class TessConvert {
 		}
 	}
 	
+	/**
+	 * Create and display the main window.
+	 */
+    private static void createAndShowGUI() {
+		// Set the Look & Feel of the application to be native.
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.err.println("Unable to set native look & feel. Exiting.");
+			//System.exit(1);
+		}
+        //Create and set up the window.
+        new MainFrame();
+    }
+    
 	private static void printHelpAndExit() {
-		System.err.println("usage: TessConvert inputFile [outputFile] [--raw]");
-		System.exit(0);
+		System.err.println("usage: TessConvert inputFile [outputFile] [--raw] [--force-overwrite]");
+		System.exit(1);
 	}
 
 	private static void invalidCommandLineError() {
@@ -80,6 +114,8 @@ public class TessConvert {
 					printHelpAndExit();
 				} else if ("--raw".equalsIgnoreCase(arg)) {
 					loadRaw = true;
+				} else if ("--force-overwrite".equalsIgnoreCase(arg)) {
+					overwrite = true;
 				} else {
 					invalidCommandLineError();
 				}
