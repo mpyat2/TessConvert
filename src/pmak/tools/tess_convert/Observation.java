@@ -13,4 +13,9 @@ public class Observation {
 	public double value;
 	public Double error;
 	
+	@Override
+	public String toString() {
+        return time + "\t" + value + (error != null ? "\t" + error : "");
+    }
+	
 }

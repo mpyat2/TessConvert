@@ -225,8 +225,7 @@ public class MainFrame extends JFrame {
 					tess_reader.readObservations(loadRaw);
 					for (int i = 0; i < tess_reader.getObservationCount(); i++) {
 						Observation obs = tess_reader.getObservation(i);
-						String s = obs.time + "\t" + obs.value + (obs.error != null ? "\t" + obs.error : "");
-						list.add(s);
+						list.add(obs.toString());
 					}
 					Files.write(Paths.get(outputName), list);
 				} finally {
