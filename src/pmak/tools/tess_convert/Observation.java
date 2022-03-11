@@ -11,6 +11,6 @@ public class Observation {
 	
 	public double time;
 	public double value;
-	public double error;
+	public Double error;
 	
 }

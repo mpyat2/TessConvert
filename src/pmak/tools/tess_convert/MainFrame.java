@@ -150,11 +150,13 @@ public class MainFrame extends JFrame {
 			return;
 		}
 		
-		File file = new File(inputName);
-		if (file.exists()) {
-			int result = JOptionPane.showConfirmDialog(this, "Overwrite existing output file?", "Confirm", JOptionPane.YES_NO_OPTION);
-			if (result != JOptionPane.YES_OPTION) {
-				return;
+		{
+			File file = new File(outputName);
+			if (file.exists()) {
+				int result = JOptionPane.showConfirmDialog(this, "Overwrite existing output file?", "Confirm", JOptionPane.YES_NO_OPTION);
+				if (result != JOptionPane.YES_OPTION) {
+					return;
+				}
 			}
 		}
 		
@@ -209,9 +211,9 @@ public class MainFrame extends JFrame {
 						JOptionPane.QUESTION_MESSAGE,
 						null, options.toArray(), defaultOption);
 				if (result == JOptionPane.YES_OPTION) {
-					loadRaw = false;
-				} else if (result == JOptionPane.NO_OPTION) {
 					loadRaw = true;
+				} else if (result == JOptionPane.NO_OPTION) {
+					loadRaw = false;
 				} else {
 					return;
 				}
@@ -223,7 +225,7 @@ public class MainFrame extends JFrame {
 					tess_reader.readObservations(loadRaw);
 					for (int i = 0; i < tess_reader.getObservationCount(); i++) {
 						Observation obs = tess_reader.getObservation(i);
-						String s = obs.time + "\t" + obs.value + "\t" + obs.error;
+						String s = obs.time + "\t" + obs.value + (obs.error != null ? "\t" + obs.error : "");
 						list.add(s);
 					}
 					Files.write(Paths.get(outputName), list);
@@ -234,6 +236,9 @@ public class MainFrame extends JFrame {
 			}
 		} catch (Exception ex) {
 			showError(ex.getMessage());
+		}
+		catch (Throwable t) {
+			showFatalError(t.getMessage());
 		}
 	}
 	
@@ -281,6 +286,11 @@ public class MainFrame extends JFrame {
 	
 	private void showError(String message) {
 		JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	private void showFatalError(String message) {
+		JOptionPane.showMessageDialog(this, "FATAL ERROR: The program will be terminated\n\n" + message, "Fatal Error", JOptionPane.ERROR_MESSAGE);
+		System.exit(1);
 	}
 
 	private void showMessage(String message) {

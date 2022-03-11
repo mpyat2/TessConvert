@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.stat.descriptive.rank.Median;
+import org.apache.commons.math.stat.descriptive.rank.Median;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
@@ -34,7 +34,7 @@ public class TessFITSreader {
 	private TessType tessType = TessType.UNKNOWN;
 	private double keplerOrTessMag = INVALID_MAG; 
 	private Fits fits = null;
-	private BasicHDU<?>[] hdus = null;
+	private BasicHDU[] hdus = null;
 	
 	private List<Observation> observations = new ArrayList<Observation>();
 	
@@ -153,17 +153,17 @@ public class TessFITSreader {
 		for (int row = 0; row < rows; row++) {
 			double barytime = ((double[]) tableHDU.getElement(row, timeColumn))[0];
 			float flux = ((float[]) tableHDU.getElement(row, fluxColumn))[0];
-			float flux_err = errorColumn >= 0 ? ((float[]) tableHDU.getElement(row, errorColumn))[0] : 0;
+			Float flux_err = errorColumn >= 0 ? ((float[]) tableHDU.getElement(row, errorColumn))[0] : null;
 			// Include only valid magnitude fluxes.
 			if (!Float.isInfinite(flux)	&& 
-				!Float.isInfinite(flux_err)	&& 
+				(flux_err == null || !Float.isInfinite(flux_err)) && 
 				!Float.isNaN(flux) &&
-				!Float.isNaN(flux_err) && 
+				(flux_err == null || !Float.isNaN(flux_err)) && 
 				(flux > 0)) {
 					Observation obs = new Observation();
 					obs.time = barytime + timei + timef;
 					obs.value = flux;
-					obs.error = flux_err;
+					obs.error = flux_err != null ? (double)flux_err : null;
 					observations.add(obs);
 			}
 		}
@@ -183,7 +183,7 @@ public class TessFITSreader {
 				
 		for (Observation obs : observations) {
 			double mag = magShift - 2.5 * Math.log10(obs.value);
-			double magErr = 1.086 * obs.error / obs.value;
+			Double magErr = obs.error != null ? 1.086 * obs.error / obs.value : null;
 			obs.value = mag;
 			obs.error = magErr;
 		}

@@ -6,7 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="extlib/nom-tam-fits-1.16.0.jar"/>
-	<classpathentry kind="lib" path="extlib/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="extlib/commons-math-2.2.jar"/>
+	<classpathentry kind="lib" path="extlib/tamfits.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
