@@ -35,8 +35,8 @@ public class TessConvert {
 			processCmdLineArgs(args);
 			try {
 				processFile();
-			} catch (Exception ex) {
-				System.err.println(ex.getMessage());
+			} catch (Throwable t) {
+				System.err.println("**** ERROR: " + t.getMessage());
 				System.exit(1);
 			}
 		} else {
@@ -89,7 +89,7 @@ public class TessConvert {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			System.err.println("Unable to set native look & feel. Exiting.");
+			System.err.println("Unable to set native look & feel.");
 			//System.exit(1);
 		}
         //Create and set up the window.
