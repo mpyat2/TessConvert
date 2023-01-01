@@ -39,9 +39,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: "..\{#TheAppExeName}"; DestDir: "{app}"            ; Flags: ignoreversion                                
-Source: "..\dist\*"          ; DestDir: "{app}\dist"       ; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\extlib\*"        ; DestDir: "{app}\extlib"     ; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\{#TheAppExeName}"; DestDir: "{app}"            ; Flags: ignoreversion
+Source: "..\TessConvert.bat" ; DestDir: "{app}"            ; Flags: ignoreversion
+Source: "..\dist\*.jar"      ; DestDir: "{app}\dist"       ; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\extlib\*.jar"    ; DestDir: "{app}\extlib"     ; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#TheAppName}"; Filename: "{app}\{#TheAppExeName}"
