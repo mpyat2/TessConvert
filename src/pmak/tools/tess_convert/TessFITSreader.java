@@ -58,8 +58,11 @@ public class TessFITSreader {
 			// Check for QLP fields
 			if ("TIME".equals(tableHDU.getColumnName(0)) &&
 				"SAP_FLUX".equals(tableHDU.getColumnName(2)) &&
-				"KSPSAP_FLUX".equals(tableHDU.getColumnName(3)) &&
-				"KSPSAP_FLUX_ERR".equals(tableHDU.getColumnName(4)) &&
+				(
+						// Sector 56: column names were changed: KSPSAP_FLUX -> DET_FLUX, KSPSAP_FLUX_ERR -> DET_FLUX_ERR
+						"KSPSAP_FLUX".equals(tableHDU.getColumnName(3)) && "KSPSAP_FLUX_ERR".equals(tableHDU.getColumnName(4)) ||
+						"DET_FLUX".equals(tableHDU.getColumnName(3)) && "DET_FLUX_ERR".equals(tableHDU.getColumnName(4))
+				) &&
 				"QUALITY".equals(tableHDU.getColumnName(5))) {
 				tessType = TessType.QLP;
 			} else {
